@@ -1,0 +1,9 @@
+set mouse=a
+set number
+syntax on
+set hlsearch
+set incsearch
+set autoindent
+set tabstop=4
+set showmatch
+imap jj <Esc>
