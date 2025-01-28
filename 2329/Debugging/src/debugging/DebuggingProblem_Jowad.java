@@ -1,6 +1,8 @@
 package debugging;
 
 import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DebuggingProblem_Jowad
 {
@@ -16,7 +18,10 @@ public class DebuggingProblem_Jowad
 		assert intArray != null : "intArray is null!";
 		long seed = name.hashCode();
 		Random random = new Random(seed);
-		
+		Set<Integer> evenSeenSoFar = new HashSet<>();
+	    Set<Integer> evenFollowedByAnOdd = new HashSet<>();
+	    Integer lastEven = null; 
+	    boolean oddOccurred = false;
 		for(int i = 0; i < 100000; i++)
 		{
 			if(i % 1000 == 0) System.out.println("i = " + i);
@@ -24,13 +29,33 @@ public class DebuggingProblem_Jowad
 			int random_k = random.nextInt(intArray.length);
 			
 			
-			if(intArray[0] % 2 != 0) {
-				System.out.println("Hello Java"); 
-			}
 			
 			int temp = intArray[random_j];
 			intArray[random_j] = intArray[random_k];
 			intArray[random_k] = temp;
+			int current = intArray[0];
+
+	        if (current % 2 == 0) { // Current is even
+	            if (evenSeenSoFar.contains(current)) {
+	                // If odd occurred between repeated even numbers, print result and exit
+	                if (oddOccurred) {
+	                    System.out.println("First even repeated value with an odd in between: " + current);
+	                }
+	            } else {
+	                evenSeenSoFar.add(current); // Add new even number to seen set
+	            }
+
+	            // Reset flags
+	            lastEven = current;
+	            oddOccurred = false;
+
+	        } else { // Current is odd
+	            if (lastEven != null) {
+	                // Mark that an odd occurred after an even
+	                oddOccurred = true;
+	                evenFollowedByAnOdd.add(lastEven);
+	            }
+	        }
 			
 		}
 	}
