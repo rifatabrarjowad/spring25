@@ -22,9 +22,12 @@ public class DebuggingProblem_Jowad
 			if(i % 1000 == 0) System.out.println("i = " + i);
 			int random_j = random.nextInt(intArray.length);
 			int random_k = random.nextInt(intArray.length);
+			
+			
 			if(intArray[0] % 2 != 0) {
 				System.out.println("Hello Java"); 
 			}
+			
 			int temp = intArray[random_j];
 			intArray[random_j] = intArray[random_k];
 			intArray[random_k] = temp;
