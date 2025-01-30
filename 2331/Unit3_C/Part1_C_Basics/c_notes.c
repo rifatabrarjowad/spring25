@@ -1,6 +1,3 @@
-Here is the fixed version of your code:
-
-```c
 // Rifat Abrar Jowad
 #include <stdio.h> 
 #include <stdlib.h> 
