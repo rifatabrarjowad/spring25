@@ -8,7 +8,7 @@ LDFLAGS := -m32
 CC		:= gcc
 CXX		:= g++
 CXXFLAGS := -m32
-TARGETS := conditional_statements_notes template
+TARGETS := assembly_basics_notes template 
 DEP := driver.o asm_io.o
 
 .PHONY: clean
@@ -18,13 +18,13 @@ DEP := driver.o asm_io.o
 
 all: $(TARGETS)
 
-conditional_statements_notes: $(DEP)
+assembly_basics_II_notes: $(DEP)
 template: $(DEP)
 
 asm_io.o: asm_io.asm
 	$(AS) $(ASFLAGS) -d ELF_TYPE asm_io.asm
 
-conditional_statements_notes.o: asm_io.inc
+assembly_basics_II_notes.o: asm_io.inc
 template.o: asm_io.inc
 
 clean :

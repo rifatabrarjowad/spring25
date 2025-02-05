@@ -18,13 +18,13 @@ DEP := driver.o asm_io.o
 
 all: $(TARGETS)
 
-assembly_basics_notes: $(DEP)
+assembly_basics_I_notes: $(DEP)
 template: $(DEP)
 
 asm_io.o: asm_io.asm
 	$(AS) $(ASFLAGS) -d ELF_TYPE asm_io.asm
 
-assembly_basics_notes.o: asm_io.inc
+assembly_basics_I_notes.o: asm_io.inc
 template.o: asm_io.inc
 
 clean :

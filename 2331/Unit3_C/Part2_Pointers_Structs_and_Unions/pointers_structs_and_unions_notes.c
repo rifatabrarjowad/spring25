@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
     // int* number2 = (int*) calloc(5, sizeof(int));
     // number2[3] = 7;
     // number2[10] = 9;
+    
     // number2[-1] = 8;
     char word[11];
     printf("Enter a word: ");
