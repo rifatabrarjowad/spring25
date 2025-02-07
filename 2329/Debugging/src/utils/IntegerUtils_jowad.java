@@ -50,18 +50,37 @@ public interface IntegerUtils_jowad {
     /**
      * Finds the greatest common factor (GCF) of two numbers.
      * Examples:
-     * - Straightforward: greatestCommonFactor(8, 12) -> 4
-     * - Extreme: greatestCommonFactor(17, 31) -> 1
+     * - Straightforward: greatestCommonFactor(5, -10) -> 5
+     * - Extreme: greatestCommonFactor(-1, 1) -> 1
      * - Bizarre/Exotic: greatestCommonFactor(0, 5) -> 5
      */
     public static int greatestCommonFactor(int m, int n) {
-        while (n != 0 && n != 1) {
-            int temp = n;
-            n = m % n;
-            m = temp;
-        }
-        return m;
-    }
+	    if (m < 0) {
+	        m = -m;
+	    }
+	    if (n < 0) {
+	        n = -n;
+	    }
+
+	    if (m == 0) {
+	        return n;
+	    }
+	    if (n == 0) {
+	        return m;
+	    }
+
+	    // Find the smaller number 
+	    int limit = (m < n) ? m : n; 
+
+	    // Find the GCF by checking divisors
+	    int gcf = 1; // Initialize GCF
+	    for (int i = 1; i <= limit; i++) {
+	        if (m % i == 0 && n % i == 0) {
+	            gcf = i; // Update GCF
+	        }
+	    }
+	    return gcf;
+	}
 
     /**
      * Finds the greatest multiple of k that is less than or equal to the given maximum.
