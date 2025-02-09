@@ -3,7 +3,7 @@ package utils;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface IntegerUtils_jowad {
+public interface IntegerUtils_Jowad {
 
     /**
      * Checks if a number is even.
