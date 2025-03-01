@@ -1,5 +1,3 @@
-
-
 %include "asm_io.inc"
 
 ; initialized data
@@ -36,16 +34,18 @@ asm_main:
     ; ===== Operation 1: Multiply by 16 if the number is negative =====
     mov eax, [num1]           ; Load the number into eax
     mov ebx, eax              ; Copy the number
-    and ebx, 0x80000000       ; Isolate the sign bit
     
-    ; If sign bit is set, ebx will be non-zero
-    ; We'll multiply by 16 conditionally
-    shr ebx, 31               ; Convert to 0 or 1
-    shl ebx, 4                ; Convert to 0 or 16
+    ; Create a mask: all 1s if negative, all 0s if positive
+    sar ebx, 31               ; If negative: 0xFFFFFFFF, if positive: 0x00000000
     
-    ; If negative, shift 4 times
-    mov ecx, ebx              ; Copy shift amount to ecx
-    shl eax, cl               ; Shift left by 0 or 4 (depending on sign)
+    ; Create a value to add: original value * 15 if negative, 0 if positive
+    mov ecx, [num1]           ; Load original number
+    imul ecx, 15              ; Multiply by 15
+    and ecx, ebx              ; If negative: keep the value, if positive: make it 0
+    
+    ; Add the calculated value to the original
+    add eax, ecx              ; For negative numbers: x + 15x = 16x
+                              ; For positive numbers: x + 0 = x
     
     mov [result], eax         ; Store the result
     
@@ -63,8 +63,10 @@ asm_main:
     mov ebx, eax              ; Copy the number
     and ebx, 1                ; Isolate the least significant bit
     
-    ; If LSB is set (odd), ebx will be 1
-    shl ebx, 8                ; Convert to 0 or 0x100
+    ; Create a mask: 0x100 if odd, 0x000 if even
+    shl ebx, 8                ; Shift the LSB to position 8
+    
+    ; Set the 8th bit if odd
     or eax, ebx               ; Apply the mask
     
     mov [result], eax         ; Store the result
@@ -83,9 +85,11 @@ asm_main:
     mov ebx, eax              ; Copy the number
     and ebx, 1                ; Isolate the least significant bit
     
-    ; We'll create a mask based on whether number is odd or even
+    ; Create a mask: all 1s if odd, all 0s if even
     neg ebx                   ; If odd (ebx=1): ebx=0xFFFFFFFF, if even (ebx=0): ebx=0
-    and eax, ebx              ; Apply the mask: if even, zeros out all bits
+    
+    ; Apply the mask
+    and eax, ebx              ; If odd: keep all bits, if even: zero out
     
     mov [result], eax         ; Store the result
     
