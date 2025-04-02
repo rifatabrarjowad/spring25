@@ -2,7 +2,7 @@ package dominoes;
 
 import java.util.Set;
 
-public class DominoHighLowImpl_Jowad implements Domino {
+public class DominoHighLowImpl_Jowad implements Domino_Jowad {
     private final int highPipCount;
     private final int lowPipCount;
 

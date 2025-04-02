@@ -2,7 +2,7 @@ package dominoes;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DominoHighLowSetImpl_Jowad implements Domino {
+public class DominoHighLowSetImpl_Jowad implements Domino_Jowad {
     private final Set<Integer> highLowSet;
 
     public DominoHighLowSetImpl_Jowad(int highPipCount, int lowPipCount) {
@@ -12,6 +12,45 @@ public class DominoHighLowSetImpl_Jowad implements Domino {
         }
         this.highLowSet = Set.of(highPipCount, lowPipCount);
     }
+    public static final char SUM_DIFFERENCE_DELIMITER = ','; 
+
+    public static boolean isSumDifferenceString(String str) {
+        // Check if the string is null
+        if (str == null) {
+            return false;
+        }
+
+        // Split the string using the SUM_DIFFERENCE_DELIMITER
+        String[] parts = str.split(String.valueOf(SUM_DIFFERENCE_DELIMITER));
+
+        // Ensure the split produces exactly two parts
+        if (parts.length != 2) {
+            return false;
+        }
+
+        try {
+            // Parse the two parts into integers
+            int sum = Integer.parseInt(parts[0]);
+            int difference = Integer.parseInt(parts[1]);
+
+            // Validate that sum and difference are non-negative
+            if (sum < 0 || difference < 0) {
+                return false;
+            }
+
+            // Calculate high and low pip counts
+            int high = (sum + difference) / 2;
+            int low = sum - high;
+
+            // Ensure high and low pip counts are valid
+            return high >= MINIMUM_PIP_COUNT && high <= MAXIMUM_PIP_COUNT &&
+                   low >= MINIMUM_PIP_COUNT && low <= MAXIMUM_PIP_COUNT;
+        } catch (NumberFormatException e) {
+            // If parsing fails, the string is invalid
+            return false;
+        }
+    }
+
     public static final char HIGH_LOW_STRING_SEPARATOR = ',';
     public static boolean isHighLowString(String str) {
         if (str == null) return false;
@@ -70,7 +109,12 @@ public class DominoHighLowSetImpl_Jowad implements Domino {
             return second;
         }
     }
-
+    public static boolean isLowPlus8TimesHighInteger(int k) {
+        int high = k / 8;
+        int low = k % 8;
+        return high >= MINIMUM_PIP_COUNT && high <= MAXIMUM_PIP_COUNT &&
+               low >= MINIMUM_PIP_COUNT && low <= MAXIMUM_PIP_COUNT;
+    }
     private void validatePipCounts(int high, int low) {
         if (high < MINIMUM_PIP_COUNT || high > MAXIMUM_PIP_COUNT ||
                 low < MINIMUM_PIP_COUNT || low > MAXIMUM_PIP_COUNT) {

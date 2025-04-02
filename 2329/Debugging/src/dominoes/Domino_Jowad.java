@@ -1,6 +1,6 @@
 package dominoes;
 
-public interface Domino {
+public interface Domino_Jowad {
     public static final int MINIMUM_PIP_COUNT = 0;
     public static final int MAXIMUM_PIP_COUNT = 6;
     //part of post: MINIMUM_PIP_COUNT <= rv <= MAXIMUM_PIP_COUNT
