@@ -1,124 +1,81 @@
 package dominoes;
-import java.util.Iterator;
+
 import java.util.Set;
 
-public class DominoHighLowSetImpl_Jowad implements Domino_Jowad {
-    private final Set<Integer> highLowSet;
+public class DominoHighLowSetImpl_Jowad implements Domino {
+
+    private final int highPipCount;
+    private final int lowPipCount;
+
+    public static final char SUM_DIFFERENCE_DELIMITER = DominoRepresentationConstants_Jowad.SUM_DIFFERENCE_DELIMITER;
 
     public DominoHighLowSetImpl_Jowad(int highPipCount, int lowPipCount) {
-        validatePipCounts(highPipCount, lowPipCount);
-        if (highPipCount < lowPipCount) {
-            throw new IllegalArgumentException("highPipCount cannot be less than lowPipCount");
-        }
-        this.highLowSet = Set.of(highPipCount, lowPipCount);
+        validatePip(highPipCount);
+        validatePip(lowPipCount);
+        this.highPipCount = Math.max(highPipCount, lowPipCount);
+        this.lowPipCount = Math.min(highPipCount, lowPipCount);
     }
-    public static final char SUM_DIFFERENCE_DELIMITER = ','; 
 
     public static boolean isSumDifferenceString(String str) {
-        // Check if the string is null
-        if (str == null) {
-            return false;
-        }
-
-        // Split the string using the SUM_DIFFERENCE_DELIMITER
+        if (str == null || !str.contains(String.valueOf(SUM_DIFFERENCE_DELIMITER))) return false;
         String[] parts = str.split(String.valueOf(SUM_DIFFERENCE_DELIMITER));
-
-        // Ensure the split produces exactly two parts
-        if (parts.length != 2) {
-            return false;
-        }
-
-        try {
-            // Parse the two parts into integers
-            int sum = Integer.parseInt(parts[0]);
-            int difference = Integer.parseInt(parts[1]);
-
-            // Validate that sum and difference are non-negative
-            if (sum < 0 || difference < 0) {
-                return false;
-            }
-
-            // Calculate high and low pip counts
-            int high = (sum + difference) / 2;
-            int low = sum - high;
-
-            // Ensure high and low pip counts are valid
-            return high >= MINIMUM_PIP_COUNT && high <= MAXIMUM_PIP_COUNT &&
-                   low >= MINIMUM_PIP_COUNT && low <= MAXIMUM_PIP_COUNT;
-        } catch (NumberFormatException e) {
-            // If parsing fails, the string is invalid
-            return false;
-        }
-    }
-
-    public static final char HIGH_LOW_STRING_SEPARATOR = ',';
-    public static boolean isHighLowString(String str) {
-        if (str == null) return false;
-        String[] parts = str.split(String.valueOf(HIGH_LOW_STRING_SEPARATOR));
         if (parts.length != 2) return false;
         try {
-            int high = Integer.parseInt(parts[0]);
-            int low = Integer.parseInt(parts[1]);
-            // Validate pip counts
-            if (high < MINIMUM_PIP_COUNT || high > MAXIMUM_PIP_COUNT) return false;
-            if (low < MINIMUM_PIP_COUNT || low > high) return false;
-            return true;
+            int sum = Integer.parseInt(parts[0]);
+            int diff = Integer.parseInt(parts[1]);
+            int high = (sum + diff) / 2;
+            int low = (sum - diff) / 2;
+            return isValidPip(high) && isValidPip(low);
         } catch (NumberFormatException e) {
             return false;
         }
     }
+
     public DominoHighLowSetImpl_Jowad(String sumDifferenceString) {
-        String[] parts = sumDifferenceString.split(String.valueOf(HIGH_LOW_STRING_SEPARATOR));
+        if (!isSumDifferenceString(sumDifferenceString))
+            throw new IllegalArgumentException("Invalid sum,difference string: " + sumDifferenceString);
+        String[] parts = sumDifferenceString.split(String.valueOf(SUM_DIFFERENCE_DELIMITER));
         int sum = Integer.parseInt(parts[0]);
-        int difference = Integer.parseInt(parts[1]);
-        int high = (sum + difference) / 2;
-        int low = sum - high;
-        validatePipCounts(high, low);
-        this.highLowSet = Set.of(high, low);
+        int diff = Integer.parseInt(parts[1]);
+        int high = (sum + diff) / 2;
+        int low = (sum - diff) / 2;
+        validatePip(high);
+        validatePip(low);
+        this.highPipCount = high;
+        this.lowPipCount = low;
+    }
+
+    public static boolean isLowPlus8TimesHighInteger(int k) {
+        int high = k / 8;
+        int low = k % 8;
+        return isValidPip(high) && isValidPip(low);
     }
 
     public DominoHighLowSetImpl_Jowad(int lowPlus8TimesHigh) {
         int high = lowPlus8TimesHigh / 8;
         int low = lowPlus8TimesHigh % 8;
-        validatePipCounts(high, low);
-        this.highLowSet = Set.of(high, low);
+        validatePip(high);
+        validatePip(low);
+        this.highPipCount = Math.max(high, low);
+        this.lowPipCount = Math.min(high, low);
     }
 
     @Override
     public int getHighPipCount() {
-        Iterator<Integer> iterator = highLowSet.iterator();
-        int first = iterator.next();
-        int second = iterator.next();
-
-        if (first > second) {
-            return first;
-        } else {
-            return second;
-        }
+        return highPipCount;
     }
 
     @Override
     public int getLowPipCount() {
-        Iterator<Integer> iterator = highLowSet.iterator();
-        int first = iterator.next();
-        int second = iterator.next();
+        return lowPipCount;
+    }
 
-        if (first < second) {
-            return first;
-        } else {
-            return second;
-        }
+    private static void validatePip(int pip) {
+        if (!isValidPip(pip))
+            throw new IllegalArgumentException("Pip out of bounds: " + pip);
     }
-    public static boolean isLowPlus8TimesHighInteger(int k) {
-        int high = k / 8;
-        int low = k % 8;
-        return high >= MINIMUM_PIP_COUNT && high <= MAXIMUM_PIP_COUNT &&
-               low >= MINIMUM_PIP_COUNT && low <= MAXIMUM_PIP_COUNT;
-    }
-    private void validatePipCounts(int high, int low) {
-        if (high < MINIMUM_PIP_COUNT || high > MAXIMUM_PIP_COUNT ||
-                low < MINIMUM_PIP_COUNT || low > MAXIMUM_PIP_COUNT) {
-            throw new IllegalArgumentException("Invalid pip counts.");
-        }
+
+    private static boolean isValidPip(int pip) {
+        return pip >= MINIMUM_PIP_COUNT && pip <= MAXIMUM_PIP_COUNT;
     }
 }

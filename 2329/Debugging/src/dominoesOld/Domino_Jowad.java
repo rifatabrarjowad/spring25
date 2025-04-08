@@ -1,4 +1,4 @@
-package dominoes;
+package dominoesOld;
 
 public interface Domino_Jowad {
     public static final int MINIMUM_PIP_COUNT = 0;

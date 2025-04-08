@@ -1,82 +1,74 @@
+
 package dominoes;
 
 import java.util.Set;
 
-public class DominoHighLowImpl_Jowad implements Domino_Jowad {
+public class DominoHighLowImpl_Jowad implements Domino {
+
     private final int highPipCount;
     private final int lowPipCount;
 
+    public static final char HIGH_LOW_STRING_SEPARATOR = DominoRepresentationConstants_Jowad.HIGH_LOW_STRING_SEPARATOR;
+    public static final int INDEX_OF_SUM = 0;
+    public static final int INDEX_OF_DIFFERENCE = 1;
+
     public DominoHighLowImpl_Jowad(int highPipCount, int lowPipCount) {
-        validatePipCounts(highPipCount, lowPipCount);
-        if (highPipCount < lowPipCount) {
-            throw new IllegalArgumentException("highPipCount cannot be less than lowPipCount");
-        }
-        this.highPipCount = highPipCount;
-        this.lowPipCount = lowPipCount;
+        validatePip(highPipCount);
+        validatePip(lowPipCount);
+        this.highPipCount = Math.max(highPipCount, lowPipCount);
+        this.lowPipCount = Math.min(highPipCount, lowPipCount);
     }
-    public static final char HIGH_LOW_STRING_SEPARATOR = ':';
+
     public static boolean isHighLowString(String str) {
-        if (str == null) return false;
+        if (str == null || !str.contains(String.valueOf(HIGH_LOW_STRING_SEPARATOR))) return false;
         String[] parts = str.split(String.valueOf(HIGH_LOW_STRING_SEPARATOR));
         if (parts.length != 2) return false;
         try {
             int high = Integer.parseInt(parts[0]);
             int low = Integer.parseInt(parts[1]);
-            // Validate pip counts
-            if (high < MINIMUM_PIP_COUNT || high > MAXIMUM_PIP_COUNT) return false;
-            if (low < MINIMUM_PIP_COUNT || low > high) return false;
-            return true;
+            return isValidPip(high) && isValidPip(low);
         } catch (NumberFormatException e) {
             return false;
         }
     }
+
     public DominoHighLowImpl_Jowad(String highLowString) {
-        String[] parts = highLowString.split(":");
+        if (!isHighLowString(highLowString))
+            throw new IllegalArgumentException("Invalid high:low string: " + highLowString);
+        String[] parts = highLowString.split(String.valueOf(HIGH_LOW_STRING_SEPARATOR));
         int high = Integer.parseInt(parts[0]);
         int low = Integer.parseInt(parts[1]);
-        validatePipCounts(high, low);
-        if (high < low) {
-            this.highPipCount = low;
-            this.lowPipCount = high;
-        } else {
-            this.highPipCount = high;
-            this.lowPipCount = low;
-        }
+        this.highPipCount = Math.max(high, low);
+        this.lowPipCount = Math.min(high, low);
     }
 
     public DominoHighLowImpl_Jowad(int[] sumDifference) {
-        int sum = sumDifference[0];
-        int difference = sumDifference[1];
-
-
-        if ((sum + difference) % 2 != 0) {
-            throw new IllegalArgumentException("Invalid input: Sum and difference must result in integer pip counts.");
-        }
-
-        int high = (sum + difference) / 2;
-        int low = sum - high;
-
-
-        validatePipCounts(high, low);
-
+        if (sumDifference == null || sumDifference.length != 2)
+            throw new IllegalArgumentException("Array must have exactly two elements");
+        int sum = sumDifference[INDEX_OF_SUM];
+        int diff = sumDifference[INDEX_OF_DIFFERENCE];
+        int high = (sum + diff) / 2;
+        int low = (sum - diff) / 2;
+        validatePip(high);
+        validatePip(low);
         this.highPipCount = high;
         this.lowPipCount = low;
     }
 
     public DominoHighLowImpl_Jowad(Set<Integer> highLowSet) {
+        if (highLowSet == null || highLowSet.size() < 1 || highLowSet.size() > 2)
+            throw new IllegalArgumentException("Set must contain 1 or 2 non-null integers");
 
-        if (highLowSet.size() < 1 || highLowSet.size() > 2) {
-            throw new IllegalArgumentException("Set size must be 1 or 2.");
-        }
-        Integer[] pips = highLowSet.toArray(new Integer[0]);
-        if (pips.length == 1) {
-            this.highPipCount = pips[0];
-            this.lowPipCount = pips[0];
+        Integer[] values = highLowSet.toArray(new Integer[0]);
+        for (Integer val : values) validatePip(val);
+
+        if (values.length == 1) {
+            this.highPipCount = values[0];
+            this.lowPipCount = values[0];
         } else {
-            this.highPipCount = Math.max(pips[0], pips[1]);
-            this.lowPipCount = Math.min(pips[0], pips[1]);
+            this.highPipCount = Math.max(values[0], values[1]);
+            this.lowPipCount = Math.min(values[0], values[1]);
         }
-        validatePipCounts(highPipCount, lowPipCount);
     }
 
     @Override
@@ -89,10 +81,12 @@ public class DominoHighLowImpl_Jowad implements Domino_Jowad {
         return lowPipCount;
     }
 
-    private void validatePipCounts(int high, int low) {
-        if (high < MINIMUM_PIP_COUNT || high > MAXIMUM_PIP_COUNT ||
-                low < MINIMUM_PIP_COUNT || low > MAXIMUM_PIP_COUNT) {
-            throw new IllegalArgumentException("Invalid pip counts.");
-        }
+    private static void validatePip(int pip) {
+        if (!isValidPip(pip))
+            throw new IllegalArgumentException("Pip out of bounds: " + pip);
+    }
+
+    private static boolean isValidPip(int pip) {
+        return pip >= MINIMUM_PIP_COUNT && pip <= MAXIMUM_PIP_COUNT;
     }
 }
